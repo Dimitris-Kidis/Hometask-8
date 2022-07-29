@@ -6,7 +6,9 @@
 // 4. Rethrow exception ✅
 // 5. Add conditional compilation symbols ✅
 // 6. Use debug class to write debug information to output window ✅
-// 7. Declare var
+// 7. Declare var ✅
+
+
 
 using System;
 using System.Diagnostics;
@@ -24,10 +26,10 @@ namespace ExceptionHandingAndDebugging
             CompilationSymbols();
 
 
-            ErrorHandling();
+            ExceptionHandler();
         }
 
-        public static void ErrorHandling()
+        public static void ExceptionHandler()
         {
             try
             {
@@ -35,37 +37,36 @@ namespace ExceptionHandingAndDebugging
                 {
                     One();
                 }
-                catch (Exception e)
+                catch (Exception e) // 1
                 {
                     Console.WriteLine("Inner Exception");
                     throw e;
                 }
                 finally
                 {
-                    Three();
+                    Debug.WriteLine("----");
+                    Trace.WriteLine("TRRRRRRACE");
+                    Four();
                 }
+                //Four();
             }
-            catch (UnexpectedException e)
+            catch (CustomException e) // 4
+            {
+                Debug.WriteLine("Check");
+                Console.WriteLine($"Catched {nameof(CustomException)} with details: {e.Message}");
+            }
+            catch (UnexpectedException e) // 3
             {
                 Console.WriteLine($"Catched {nameof(UnexpectedException)} with details: {e.Message}");
             }
-            catch (Exception e) when (e is ArgumentException | e is InvalidOperationException)
+            catch (Exception e) when (e is InvalidOperationException | e is SystemException) // 1 || 2
             {
                 Console.WriteLine($"Catched {e.GetType()} with details: {e.Message}");
             }
             finally
             {
-                Console.WriteLine("Finnaly behaviour");
+                Console.WriteLine("FINALLY!!!");
             }
-        }
-
-        public static void CompilationSymbols()
-        {
-#if DEBUG_SYMBOL
-            Console.WriteLine("DEBUG_SYMBOL");
-#elif RELEASE_SYMBOL
-            Console.WriteLine("RELEASE_SYMBOL");
-#endif
         }
 
         public static void One()
@@ -92,6 +93,17 @@ namespace ExceptionHandingAndDebugging
         {
             Console.WriteLine("Four");
             throw new CustomException("Message CustomException");
+        }
+
+        public static void CompilationSymbols()
+        {
+#if DEBUG
+            var count = 200;
+            Console.WriteLine("DEBUG. Count = " + count);
+#elif RELEASE
+            var count = 200;
+            Console.WriteLine("Release. Count = " + count);
+#endif
         }
     }
 
