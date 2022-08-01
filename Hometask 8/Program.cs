@@ -8,8 +8,6 @@
 // 6. Use debug class to write debug information to output window ✅
 // 7. Declare var ✅
 
-
-
 using System;
 using System.Diagnostics;
 
@@ -37,7 +35,7 @@ namespace ExceptionHandingAndDebugging
                 {
                     One();
                 }
-                catch (Exception e) // 1
+                catch (InvalidOperationException e) // 1
                 {
                     Console.WriteLine("Inner Exception");
                     throw e;
@@ -50,16 +48,23 @@ namespace ExceptionHandingAndDebugging
                 }
                 //Four();
             }
-            catch (CustomException e) // 4
+            catch (UnexpectedException e) // 4
             {
                 Debug.WriteLine("Check");
                 Console.WriteLine($"Catched {nameof(CustomException)} with details: {e.Message}");
             }
-            catch (UnexpectedException e) // 3
+#if DEBUG_EXCEPTION_PART
+            catch (CustomException e) // 3
             {
                 Console.WriteLine($"Catched {nameof(UnexpectedException)} with details: {e.Message}");
             }
-            catch (Exception e) when (e is InvalidOperationException | e is SystemException) // 1 || 2
+#elif RELEASE_EXCEPTION_PART
+        catch (CustomException e) // 3
+            {
+                Console.WriteLine($"Catched {nameof(UnexpectedException)} with details: {e.Message}");
+            }
+#endif
+            catch (Exception e)// when (e is InvalidOperationException | e is SystemException) // 1 || 2
             {
                 Console.WriteLine($"Catched {e.GetType()} with details: {e.Message}");
             }
